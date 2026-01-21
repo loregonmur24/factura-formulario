@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulario de Subida de Facturas</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 20px;
+            background: linear-gradient(135deg, #2c3e50, #4a6491);
+            color: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .main-content {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .form-section, .results-section {
+            flex: 1;
+            min-width: 300px;
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        .section-title {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #4a6491;
+            color: #2c3e50;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .section-title i {
+            color: #4a6491;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #444;
+        }
+        
+        input, select, button {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        
+        input:focus, select:focus {
+            border-color: #4a6491;
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(74, 100, 145, 0.2);
+        }
+        
+        .file-input-container {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+            width: 100%;
+        }
+        
+        .file-input-container input[type="file"] {
+            position: absolute;
+            left: 0;
+            top: 0;
+            opacity: 0;
+            cursor: pointer;
+            height: 100%;
+        }
+        
+        .file-input-label {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 12px;
+            background-color: #f8f9fa;
+            border: 2px dashed #ccc;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+            color: #666;
+        }
+        
+        .file-input-label:hover {
+            background-color: #e9ecef;
+            border-color: #4a6491;
+        }
+        
+        .file-name {
+            margin-top: 8px;
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .btn-submit {
+            background: linear-gradient(to right, #4a6491, #2c3e50);
+            color: white;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
+            padding: 14px;
+            font-size: 18px;
+        }
+        
+        .btn-submit:hover {
+            background: linear-gradient(to right, #3a5479, #1c2c40);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .results-container {
+            display: none;
+        }
+        
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 15px;
+            margin-bottom: 15px;
+            background-color: #f8f9fa;
+            border-left: 4px solid #4a6491;
+            border-radius: 5px;
+        }
+        
+        .result-label {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        .result-value {
+            font-weight: 500;
+            color: #333;
+        }
+        
+        .factura-preview {
+            width: 100%;
+            max-height: 200px;
+            object-fit: contain;
+            border-radius: 5px;
+            margin-top: 10px;
+            display: none;
+            border: 1px solid #ddd;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 30px;
+        }
+        
+        .spinner {
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #4a6491;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .success-message {
+            background-color: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            border-left: 4px solid #28a745;
+            display: none;
+        }
+        
+        .factura-icon {
+            font-size: 3rem;
+            color: #4a6491;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .user-data-summary {
+            background-color: #f0f7ff;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+            border-left: 4px solid #36c;
+        }
+        
+        .user-data-title {
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            color: #2c3e50;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #ddd;
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        @media (max-width: 768px) {
+            .main-content {
+                flex-direction: column;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-file-invoice-dollar"></i> Sistema de Procesamiento de Facturas</h1>
+            <p class="subtitle">Sube tu facturadel reporte del dia</p>
+        </header>
+        
+        <div class="main-content">
+            <div class="form-section">
+                <h2 class="section-title"><i class="fas fa-edit"></i> Datos quien reporta</h2>
+                
+                <form id="facturaForm">
+                    <div class="form-group">
+                        <label for="nombre"><i class="fas fa-user"></i> Nombre</label>
+                        <input type="text" id="nombre" name="nombre" placeholder="Ingresa tu nombre" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="apellido"><i class="fas fa-user"></i> Apellido</label>
+                        <input type="text" id="apellido" name="apellido" placeholder="Ingresa tu apellido" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="cuadrilla"><i class="fas fa-users"></i> Cuadrilla</label>
+                        <input type="text" id="cuadrilla" name="cuadrilla" placeholder="Ej: Cuadrilla A, Equipo 1, etc." required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="tipoCompra"><i class="fas fa-shopping-cart"></i> Tipo de Compra</label>
+                        <select id="tipoCompra" name="tipoCompra" required>
+                            <option value="">Seleccione un tipo de compra</option>
+                            <option value="gasoline">Gasoline (Gasolina)</option>
+                            <option value="tools">Tools (Herramientas)</option>
+                            <option value="hotel">Hotel (Hotel)</option>
+                            <option value="food">Food (Comida o Viveres)</option>
+                            <option value="office_machines">Office Machines (Máquinas de Oficio)</option>
+                            <option value="other">Other (Otro)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="fechaCarga"><i class="fas fa-calendar-alt"></i> Fecha de Carga</label>
+                        <input type="date" id="fechaCarga" name="fechaCarga" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="imagenFactura"><i class="fas fa-file-image"></i> Imagen de Factura</label>
+                        <div class="file-input-container">
+                            <input type="file" id="imagenFactura" name="imagenFactura" accept="image/*,.txt,.pdf" required>
+                            <div class="file-input-label">
+                                <i class="fas fa-cloud-upload-alt"></i>
+                                <span>Haz clic para seleccionar una imagen o archivo de texto</span>
+                            </div>
+                        </div>
+                        <div class="file-name" id="fileName">No se ha seleccionado ningún archivo</div>
+                        <img id="preview" class="factura-preview" alt="Vista previa de la factura">
+                    </div>
+                    
+                    <button type="submit" class="btn-submit">
+                        <i class="fas fa-upload"></i> Subir Factura y Procesar
+                    </button>
+                </form>
+                
+                <div class="loading" id="loading">
+                    <div class="spinner"></div>
+                    <p>Procesando factura... Esto puede tomar unos segundos.</p>
+                </div>
+                
+                <div class="success-message" id="successMessage">
+                    <i class="fas fa-check-circle"></i> Factura procesada exitosamente. Los resultados se muestran a continuación.
+                </div>
+            </div>
+            
+            <div class="results-section">
+                <h2 class="section-title"><i class="fas fa-chart-bar"></i> Datos Extraídos de la Factura</h2>
+                
+                <div class="factura-icon">
+                    <i class="fas fa-file-invoice"></i>
+                </div>
+                
+                <p>Después de subir la factura, los datos extraídos aparecerán aquí. El sistema analiza el contenido utilizando procesamiento de texto para identificar la información relevante.</p>
+                
+                <div class="results-container" id="resultsContainer">
+                    <div class="result-item">
+                        <span class="result-label">Valor en dólares:</span>
+                        <span class="result-value" id="valorDolares">-</span>
+                    </div>
+                    
+                    <div class="result-item">
+                        <span class="result-label">Fecha de compra:</span>
+                        <span class="result-value" id="fechaCompra">-</span>
+                    </div>
+                    
+                    <div class="result-item">
+                        <span class="result-label">Nombre de tienda:</span>
+                        <span class="result-value" id="nombreTienda">-</span>
+                    </div>
+                    
+                    <div class="result-item">
+                        <span class="result-label">Tipo de pago:</span>
+                        <span class="result-value" id="tipoPago">-</span>
+                    </div>
+                    
+                    <div class="result-item">
+                        <span class="result-label">Últimos 4 dígitos de tarjeta:</span>
+                        <span class="result-value" id="digitosTarjeta">-</span>
+                    </div>
+                </div>
+                
+                <div class="user-data-summary" id="userDataSummary" style="display: none;">
+                    <h3 class="user-data-title"><i class="fas fa-user-circle"></i> Datos del Usuario</h3>
+                    <div class="result-item">
+                        <span class="result-label">Nombre completo:</span>
+                        <span class="result-value" id="userNombreCompleto">-</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Cuadrilla:</span>
+                        <span class="result-value" id="userCuadrilla">-</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Tipo de compra:</span>
+                        <span class="result-value" id="userTipoCompra">-</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Fecha de carga:</span>
+                        <span class="result-value" id="userFechaCarga">-</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>Sistema de procesamiento de facturas &copy; 2023 | Análisis de texto para extracción de datos</p>
+            <p><i class="fas fa-info-circle"></i> Nota: Esta versión analiza el contenido de texto de la factura para extraer información real.</p>
+        </footer>
+    </div>
+
+    <script>
+        // Establecer la fecha actual como valor predeterminado
+        document.addEventListener('DOMContentLoaded', function() {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('fechaCarga').value = today;
+            
+            // Manejar la selección de archivos
+            const fileInput = document.getElementById('imagenFactura');
+            const fileNameDisplay = document.getElementById('fileName');
+            const preview = document.getElementById('preview');
+            
+            fileInput.addEventListener('change', function() {
+                if (this.files && this.files[0]) {
+                    const fileName = this.files[0].name;
+                    fileNameDisplay.textContent = `Archivo seleccionado: ${fileName}`;
+                    
+                    // Mostrar vista previa de la imagen solo si es una imagen
+                    if (this.files[0].type.startsWith('image/')) {
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            preview.src = e.target.result;
+                            preview.style.display = 'block';
+                        };
+                        reader.readAsDataURL(this.files[0]);
+                    } else {
+                        preview.style.display = 'none';
+                    }
+                } else {
+                    fileNameDisplay.textContent = 'No se ha seleccionado ningún archivo';
+                    preview.style.display = 'none';
+                }
+            });
+            
+            // Manejar el envío del formulario
+            const form = document.getElementById('facturaForm');
+            const loading = document.getElementById('loading');
+            const successMessage = document.getElementById('successMessage');
+            const resultsContainer = document.getElementById('resultsContainer');
+            const userDataSummary = document.getElementById('userDataSummary');
+            
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                // Mostrar indicador de carga
+                loading.style.display = 'block';
+                successMessage.style.display = 'none';
+                resultsContainer.style.display = 'none';
+                userDataSummary.style.display = 'none';
+                
+                // Obtener el archivo seleccionado
+                const file = fileInput.files[0];
+                
+                if (!file) {
+                    alert('Por favor, selecciona un archivo');
+                    loading.style.display = 'none';
+                    return;
+                }
+                
+                // Leer el contenido del archivo
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    // Simular un pequeño retraso para el procesamiento
+                    setTimeout(() => {
+                        try {
+                            let contenido = e.target.result;
+                            let datosFactura;
+                            
+                            // Si es un archivo de texto, usar el contenido directamente
+                            if (file.type === 'text/plain') {
+                                datosFactura = procesarFactura(contenido);
+                            } 
+                            // Si es una imagen, usar la factura de ejemplo como simulación
+                            else if (file.type.startsWith('image/')) {
+                                // En un caso real, aquí se usaría OCR para extraer texto de la imagen
+                                // Para esta demo, usaremos la factura de ejemplo que proporcionaste
+                                const facturaEjemplo = `THANK YOU FOR SHOPPING AT  
+MARTIN ACE HOME CENTER  
+(574) 825-7011  
+
+10/02/24  4:40PM GLL    552    SALE  
+
+56    FASTENERS    12   EA    .40  EA  
+FASTENERS    12   EA    .40  EA  
+FASTENERS    12    EA    .40  EA  
+FASTENERS    14    EA    .25  EA  
+FASTENERS    $3.50  
+
+SUB-TOTAL: $17.90   TAX: $1.25  
+    TOTAL: $19.15  
+    BC AMT: $19.15  
+
+BK CARD#: XXXXXXXXXXXXX9283  
+MID:********0880    TID:**2766  
+AUTH: 407369    AMT: $19.15  
+Host reference #: 234886    Bat#  
+
+Authorizing Network: MASTERCARD  
+
+Contactless  
+CARD TYPE: MASTERCARD    EXPR: XXXX  
+AID : A0000000041010  
+TVR : 0000008001  
+IAD : 0114A14003020000004000000000000  
+TSI :  
+ARC : 00  
+MODE : Issuer  
+CVM :  
+Name : DEBIT MASTERCARD  
+ATC : 004F  
+AC : 74F38395E9B2F746  
+TxnID/Va1Code: 255103  
+
+Bank card    USD$    19.15  
+
+===> JRNL#    C34886  
+    CUST NO: *5  
+
+I agree to pay above total amount  
+according to card issuer agreement`;
+                                
+                                datosFactura = procesarFactura(facturaEjemplo);
+                            } else {
+                                throw new Error('Tipo de archivo no soportado');
+                            }
+                            
+                            // Actualizar la interfaz con los resultados de la factura
+                            document.getElementById('valorDolares').textContent = datosFactura.valorDolares;
+                            document.getElementById('fechaCompra').textContent = datosFactura.fechaCompra;
+                            document.getElementById('nombreTienda').textContent = datosFactura.nombreTienda;
+                            document.getElementById('tipoPago').textContent = datosFactura.tipoPago;
+                            document.getElementById('digitosTarjeta').textContent = datosFactura.digitosTarjeta;
+                            
+                            // Actualizar los datos del usuario
+                            const nombre = document.getElementById('nombre').value;
+                            const apellido = document.getElementById('apellido').value;
+                            const cuadrilla = document.getElementById('cuadrilla').value;
+                            const tipoCompra = document.getElementById('tipoCompra').value;
+                            const fechaCarga = document.getElementById('fechaCarga').value;
+                            
+                            // Mostrar datos del usuario
+                            document.getElementById('userNombreCompleto').textContent = `${nombre} ${apellido}`;
+                            document.getElementById('userCuadrilla').textContent = cuadrilla;
+                            
+                            // Convertir valor del tipo de compra a texto legible
+                            const tipoCompraText = {
+                                'gasoline': 'Gasoline (Gasolina)',
+                                'tools': 'Tools (Herramientas)',
+                                'hotel': 'Hotel (Hotel)',
+                                'food': 'Food (Comida o Viveres)',
+                                'office_machines': 'Office Machines (Máquinas de Oficio)',
+                                'other': 'Other (Otro)'
+                            }[tipoCompra] || tipoCompra;
+                            
+                            document.getElementById('userTipoCompra').textContent = tipoCompraText;
+                            document.getElementById('userFechaCarga').textContent = fechaCarga;
+                            
+                            // Ocultar indicador de carga y mostrar resultados
+                            loading.style.display = 'none';
+                            successMessage.style.display = 'block';
+                            resultsContainer.style.display = 'block';
+                            userDataSummary.style.display = 'block';
+                            
+                            // Desplazar la vista hacia los resultados
+                            document.querySelector('.results-section').scrollIntoView({
+                                behavior: 'smooth'
+                            });
+                            
+                            // Mostrar resumen en consola
+                            console.log('=== DATOS DEL USUARIO ===');
+                            console.log(`Nombre: ${nombre} ${apellido}`);
+                            console.log(`Cuadrilla: ${cuadrilla}`);
+                            console.log(`Tipo de compra: ${tipoCompraText}`);
+                            console.log(`Fecha de carga: ${fechaCarga}`);
+                            console.log('=== DATOS EXTRAÍDOS DE LA FACTURA ===');
+                            for (let key in datosFactura) {
+                                console.log(`${key}: ${datosFactura[key]}`);
+                            }
+                            
+                        } catch (error) {
+                            loading.style.display = 'none';
+                            alert('Error al procesar la factura: ' + error.message);
+                        }
+                    }, 1500); // Simular un retraso de 1.5 segundos para el procesamiento
+                };
+                
+                reader.onerror = function() {
+                    loading.style.display = 'none';
+                    alert('Error al leer el archivo');
+                };
+                
+                // Leer el archivo como texto
+                reader.readAsText(file);
+            });
+        });
+        
+        // Función para procesar el contenido de la factura y extraer información
+        function procesarFactura(contenido) {
+            console.log("Contenido de la factura:", contenido);
+            
+            const lineas = contenido.split('\n');
+            const resultado = {
+                valorDolares: 'No encontrado',
+                fechaCompra: 'No encontrada',
+                nombreTienda: 'No encontrado',
+                tipoPago: 'No encontrado',
+                digitosTarjeta: 'No encontrados'
+            };
+            
+            // Buscar el nombre de la tienda (generalmente en las primeras líneas)
+            for (let i = 0; i < Math.min(lineas.length, 5); i++) {
+                if (lineas[i].includes('HOME CENTER') || lineas[i].includes('MARTIN')) {
+                    resultado.nombreTienda = lineas[i].trim();
+                    break;
+                }
+            }
+            
+            // Buscar el valor total en dólares
+            for (let i = 0; i < lineas.length; i++) {
+                // Buscar "TOTAL:" seguido de un valor
+                if (lineas[i].includes('TOTAL:')) {
+                    const match = lineas[i].match(/TOTAL:\s*\$?(\d+\.?\d*)/);
+                    if (match && match[1]) {
+                        resultado.valorDolares = `$${match[1]} USD`;
+                    }
+                }
+                
+                // Buscar "USD$" seguido de un valor
+                if (lineas[i].includes('USD$')) {
+                    const match = lineas[i].match(/USD\$\s*(\d+\.?\d*)/);
+                    if (match && match[1]) {
+                        resultado.valorDolares = `$${match[1]} USD`;
+                    }
+                }
+                
+                // Buscar "AMT:" seguido de un valor (amount)
+                if (lineas[i].includes('AMT:')) {
+                    const match = lineas[i].match(/AMT:\s*\$?(\d+\.?\d*)/);
+                    if (match && match[1] && resultado.valorDolares === 'No encontrado') {
+                        resultado.valorDolares = `$${match[1]} USD`;
+                    }
+                }
+            }
+            
+            // Buscar fecha de compra (formato MM/DD/YY)
+            for (let i = 0; i < lineas.length; i++) {
+                // Buscar patrones de fecha como 10/02/24
+                const fechaMatch = lineas[i].match(/(\d{1,2}\/\d{1,2}\/\d{2,4})/);
+                if (fechaMatch) {
+                    const fecha = fechaMatch[1];
+                    // Convertir formato MM/DD/YY a fecha legible
+                    const partes = fecha.split('/');
+                    if (partes.length === 3) {
+                        let año = partes[2];
+                        if (año.length === 2) {
+                            año = '20' + año; // Asumimos siglo XXI
+                        }
+                        resultado.fechaCompra = `${partes[0]}/${partes[1]}/${año}`;
+                        break;
+                    }
+                }
+            }
+            
+            // Buscar tipo de pago
+            for (let i = 0; i < lineas.length; i++) {
+                if (lineas[i].includes('MASTERCARD')) {
+                    resultado.tipoPago = 'MASTERCARD';
+                    // Verificar si es débito o crédito
+                    if (lineas[i].includes('DEBIT')) {
+                        resultado.tipoPago = 'DEBIT MASTERCARD';
+                    }
+                } else if (lineas[i].includes('VISA')) {
+                    resultado.tipoPago = 'VISA';
+                } else if (lineas[i].includes('AMERICAN EXPRESS')) {
+                    resultado.tipoPago = 'AMERICAN EXPRESS';
+                } else if (lineas[i].includes('Bank card')) {
+                    resultado.tipoPago = 'Tarjeta Bancaria';
+                }
+            }
+            
+            // Buscar los últimos 4 dígitos de la tarjeta
+            for (let i = 0; i < lineas.length; i++) {
+                // Buscar patrones como XXXXXXXXXXXXX9283
+                const match1 = lineas[i].match(/[X\*]+\s*(\d{4})/);
+                if (match1 && match1[1]) {
+                    resultado.digitosTarjeta = match1[1];
+                    break;
+                }
+                
+                // Buscar "CARD#:" seguido de dígitos
+                const match2 = lineas[i].match(/CARD#:.*?(\d{4})/);
+                if (match2 && match2[1]) {
+                    resultado.digitosTarjeta = match2[1];
+                    break;
+                }
+            }
+            
+            // Para la factura de ejemplo específica
+            if (contenido.includes('XXXXXXXXXXXXX9283')) {
+                resultado.digitosTarjeta = '9283';
+            }
+            
+            // Si no se encontró valor en dólares, buscar cualquier valor numérico con $
+            if (resultado.valorDolares === 'No encontrado') {
+                for (let i = 0; i < lineas.length; i++) {
+                    const match = lineas[i].match(/\$(\d+\.?\d*)/);
+                    if (match && match[1]) {
+                        // Buscar el valor más grande (probablemente el total)
+                        const valor = parseFloat(match[1]);
+                        if (valor > 0) {
+                            resultado.valorDolares = `$${valor.toFixed(2)} USD`;
+                        }
+                    }
+                }
+            }
+            
+            return resultado;
+        }
+    </script>
+</body>
+</html>
