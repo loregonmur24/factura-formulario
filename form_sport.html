@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <!-- Configuro la codificación UTF-8 para manejar correctamente los caracteres especiales y emojis -->
+    <meta charset="UTF-8">
+    <!-- Hago que la página sea responsive, adaptándose a cualquier tamaño de pantalla -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Le doy un título descriptivo a la página que aparecerá en la pestaña del navegador -->
+    <title>Mi Deporte Favorito</title>
+    
+    <!-- Defino todos los estilos CSS que harán que nuestra página sea visualmente atractiva -->
+    <style>
+        /* Configuro el fondo y la disposición general del cuerpo de la página */
+        body {
+            font-family: Arial, sans-serif; /* Elijo Arial por su legibilidad y disponibilidad universal */
+            max-width: 600px; /* Limito el ancho para que no se vea demasiado extendido en pantallas grandes */
+            margin: 50px auto; /* Centro la página horizontalmente y le doy margen superior */
+            padding: 20px; /* Agrego espacio interno alrededor del contenido */
+            background-color: #f0f8ff; /* Uso un azul muy claro para el fondo, relacionado con deportes y actividad */
+        }
+        
+        /* Creo un contenedor blanco que albergará todo nuestro contenido principal */
+        .container {
+            background-color: white; /* Fondo blanco para contrastar con el fondo azul claro */
+            padding: 30px; /* Espacio interno generoso para que el contenido "respire" */
+            border-radius: 10px; /* Esquinas redondeadas para un look moderno y amigable */
+            box-shadow: 0 0 10px rgba(0,0,0,0.1); /* Sombra sutil para dar profundidad y destacar el contenedor */
+        }
+        
+        /* Estilizo el título principal de la página */
+        h1 {
+            color: #2c3e50; /* Uso un azul oscuro profesional y serio */
+            text-align: center; /* Centro el título para darle importancia visual */
+        }
+        
+        /* Defino el estilo para cada grupo de elementos del formulario */
+        .form-group {
+            margin-bottom: 20px; /* Dejo espacio entre cada grupo de campos */
+        }
+        
+        /* Personalizo las etiquetas para que sean claras y fáciles de identificar */
+        label {
+            display: block; /* Hago que cada etiqueta ocupe toda una línea */
+            margin-bottom: 5px; /* Separo la etiqueta del campo que describe */
+            font-weight: bold; /* Pongo las etiquetas en negrita para destacarlas */
+        }
+        
+        /* Estilo común para todos los elementos interactivos del formulario */
+        input, select, button {
+            width: 100%; /* Hago que ocupen todo el ancho disponible del contenedor */
+            padding: 10px; /* Agrego espacio interno para mejor usabilidad táctil */
+            margin-bottom: 10px; /* Separo los elementos verticalmente */
+            border: 1px solid #ddd; /* Borde gris claro y sutil */
+            border-radius: 5px; /* Esquinas ligeramente redondeadas para suavidad visual */
+        }
+        
+        /* Personalizo especialmente el botón de envío */
+        button {
+            background-color: #3498db; /* Azul atractivo que invita a la acción */
+            color: white; /* Texto blanco para máximo contraste */
+            border: none; /* Elimino el borde por defecto del botón */
+            cursor: pointer; /* Cambio el cursor a una manita para indicar interactividad */
+            font-size: 16px; /* Tamaño de fuente legible y adecuado */
+        }
+        
+        /* Agrego un efecto visual cuando el usuario pasa el mouse sobre el botón */
+        button:hover {
+            background-color: #2980b9; /* Azul más oscuro para el estado hover */
+        }
+        
+        /* Estilizo el área donde mostraré los resultados de la selección */
+        #resultado {
+            margin-top: 20px; /* Separo los resultados del formulario */
+            padding: 15px; /* Espacio interno para el contenido de resultados */
+            border: 1px solid #ddd; /* Borde sutil que delimita el área */
+            border-radius: 5px; /* Esquinas redondeadas para consistencia visual */
+            background-color: #ecf0f1; /* Fondo gris claro para diferenciar del formulario */
+            display: none; /* Lo oculto inicialmente, lo mostraré con JavaScript cuando haya datos */
+        }
+    </style>
+</head>
+<body>
+    <!-- Contenedor principal que agrupa todo el contenido de la página -->
+    <div class="container">
+        <!-- Título principal con emoji de deporte para hacerlo más atractivo -->
+        <h1>⚽ Mi Deporte Favorito</h1>
+        
+        <!-- Este es el formulario principal donde el usuario ingresará sus datos -->
+        <form id="formularioDeporte">
+            <!-- Primer campo: Para que el usuario ingrese su nombre -->
+            <div class="form-group">
+                <label for="nombre">¿Cuál es tu nombre?</label>
+                <input type="text" id="nombre" name="nombre" required 
+                       placeholder="Ej: María González">
+                <!-- Uso el atributo "required" para obligar a completar este campo -->
+                <!-- El "placeholder" da un ejemplo de lo que se espera que ingrese -->
+            </div>
+            
+            <!-- Segundo campo: Menú desplegable para seleccionar el deporte favorito -->
+            <div class="form-group">
+                <label for="deporte">Selecciona tu deporte favorito:</label>
+                <select id="deporte" name="deporte" required>
+                    <option value="">-- Elige un deporte --</option> <!-- Opción vacía por defecto -->
+                    <option value="futbol">⚽ Fútbol</option> <!-- Cada opción tiene su emoji correspondiente -->
+                    <option value="baloncesto">🏀 Baloncesto</option>
+                    <option value="tenis">🎾 Tenis</option>
+                    <option value="natacion">🏊 Natación</option>
+                    <option value="ciclismo">🚴 Ciclismo</option>
+                    <option value="atletismo">🏃 Atletismo</option>
+                    <option value="otros">🎯 Otros</option> <!-- Opción para deportes no listados -->
+                </select>
+            </div>
+            
+            <!-- Botón para enviar el formulario -->
+            <button type="submit">Enviar Selección</button>
+        </form>
+        
+        <!-- Esta sección se mostrará solo después de enviar el formulario -->
+        <div id="resultado">
+            <h2>Tu Elección:</h2>
+            <!-- Aquí inyectaré dinámicamente la información con JavaScript -->
+            <p id="infoSeleccion"></p>
+        </div>
+    </div>
+
+    <!-- Aquí es donde añado la lógica JavaScript para manejar el formulario -->
+    <script>
+        // Primero, obtengo una referencia al formulario para poder interactuar con él
+        const formulario = document.getElementById('formularioDeporte');
+        
+        // Escucho el evento 'submit' que ocurre cuando el usuario envía el formulario
+        formulario.addEventListener('submit', function(evento) {
+            // Prevengo el comportamiento por defecto del formulario (recargar la página)
+            evento.preventDefault();
+            
+            // Ahora capturo los valores que el usuario ingresó en los campos
+            const nombre = document.getElementById('nombre').value;
+            const deporteSeleccionado = document.getElementById('deporte').value;
+            
+            // Para hacerlo más amigable, creo un objeto que mapea los valores técnicos a nombres bonitos
+            const nombresDeportes = {
+                'futbol': '⚽ Fútbol',
+                'baloncesto': '🏀 Baloncesto', 
+                'tenis': '🎾 Tenis',
+                'natacion': '🏊 Natación',
+                'ciclismo': '🚴 Ciclismo',
+                'atletismo': '🏃 Atletismo',
+                'otros': '🎯 Otro deporte'
+            };
+            
+            // Obtengo el nombre "bonito" del deporte seleccionado, o uso el valor directo si no está en el mapa
+            const deporteMostrar = nombresDeportes[deporteSeleccionado] || deporteSeleccionado;
+            
+            // Ahora creo un mensaje personalizado con la información del usuario
+            const mensajePersonalizado = `
+                <strong>¡Hola ${nombre}!</strong><br><br>
+                Me encanta que tu deporte favorito sea:<br>
+                <span style="font-size: 18px; font-weight: bold;">${deporteMostrar}</span><br><br>
+                ¡Excelente elección! 🎉
+            `;
+            
+            // Inyecto el mensaje en el elemento donde quiero mostrar los resultados
+            document.getElementById('infoSeleccion').innerHTML = mensajePersonalizado;
+            
+            // Finalmente, muestro la sección de resultados que antes estaba oculta
+            document.getElementById('resultado').style.display = 'block';
+            
+            // Opcional: Podría limpiar el formulario después de enviarlo
+            // formulario.reset();
+            
+            // Opcional: Podría hacer scroll automáticamente a los resultados
+            // document.getElementById('resultado').scrollIntoView({ behavior: 'smooth' });
+        });
+    </script>
+</body>
+</html>
